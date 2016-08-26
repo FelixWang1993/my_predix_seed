@@ -9,8 +9,23 @@ define(['angular', './sample-module'], function(angular, sampleModule,dropzone) 
 
 		    	 setInterval(function(){
             $scope.$apply(updateLatheStatus);
-        },20000);
+        },300000);
 
         updateLatheStatus();
+        $scope.deleteFile=function(bimage){
+        	alert(bimage+" delete clicked");
+        	$http({
+        		method:"DELETE",
+        		url:"/api/blob/v1/blob"+bimage
+        	}).success(function(){
+        		alert('Successfully deleted file: ' + bimage);
+        	}).error(function(){
+        		alert('Error deleting file: ' + bimage);
+                console.log(request.responseText);
+                location.reload();
+        	}).then(function(){
+				$scope.bimages.remove(bimage);
+        	});
+        }
 		    }]);
 		});

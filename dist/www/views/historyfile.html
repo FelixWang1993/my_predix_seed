@@ -5474,11 +5474,11 @@ body.loading .loading-modal {
         <table class="table">
             <tbody class="table tbody">
             <tr ng-repeat="bimage in bimages">
-                <td class="table td"><a href="https://my-store-aws.run.aws-usw02-pr.ice.predix.io/v1/blob/{{bimage.key}}"><span
+                <td class="table td"><a href="https://blobstore-predix-seed.run.aws-usw02-pr.ice.predix.io/v1/blob/{{bimage.key}}"><span
                         th:inline="text">{{bimage.key}}</span></a>
                 </td>
                 <td class="table td">
-                    <!--<a href="#{{bimage.key}}" class="delete-blob-link" >Delete</a>-->
+                    <button  type="submit" class="btn btn-default delete-blob-link" ng-click="deleteFile({{bimage.key}})">Delete</button>
                 </td>
             </tr>
             </tbody>
@@ -5496,24 +5496,27 @@ body.loading .loading-modal {
 // });
 
    $(function() {
-       $('.delete-blob-link').click(function(event) {
-       	alert('click');
-       	alert($(event.target).attr('href'));
-       $.ajax({
-           url:'/v1/blob/' + $(event.target).attr('data-blob-id'),
-           type: 'DELETE',
-           success: function(){
-                alert('Successfully deleted file: ' + $(event.target).attr('href'));
-           },
-           error : function(request) {
-                alert('Error deleting file: ' + $(event.target).attr('data-blob-id'));
-                console.log(request.responseText);
-                location.reload();
-           }
-       }).then(function(){
-                   $('[id="' + $(event.target).attr('data-blob-id')+'"]').remove();
-           });
-       });
+   //    $('.delete-blob-link').click(function(event) {
+    //    event.stopPropagation();
+    //    event.preventDefault();
+    //   $.ajax({
+    //       url:'/v1/blob/' + $(event.target).attr('data-blob-id'),
+    //       type: 'DELETE',
+    //       success: function(){
+     //           alert('Successfully deleted file: ' + $(event.target).attr('href'));
+    //       },
+    //       error : function(request) {
+    //            alert('Error deleting file: ' + $(event.target).attr('data-blob-id'));
+     //           console.log(request.responseText);
+    //            location.reload();
+    //       }
+    //   }).then(function(){
+   //                $('[id="' + $(event.target).attr('data-blob-id')+'"]').remove();
+   //        });
+    //   });
+        $('.delete-blob-link').click(function(event) {
+            alert("delete click");
+        });
 
        $('.upload-blob-btn').click(function(event) {
        event.stopPropagation();
@@ -5525,7 +5528,7 @@ body.loading .loading-modal {
            $.ajax({
                url: 'api/blob/v1/blob',
                data: fd,
-               processData: false,
+              processData: false,
                contentType: false,
                type: 'POST',
                success: function(){
@@ -5536,7 +5539,7 @@ body.loading .loading-modal {
                     console.log(request.responseText);
                }
            }).then(function(){
-               // location.reload();
+             //  location.reload();
            });
        });
    });

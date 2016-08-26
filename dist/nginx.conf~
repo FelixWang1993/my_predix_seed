@@ -37,9 +37,9 @@ http
     server
     {
         set     $session_name                       "predix-seed-session";
-        set     $session_secret                     U2GoXJPsG4jYx2G3Bn0k99Fle0+yNSqt7D92po40RvU=;
-        set     $client_id                          clientview;
-        set     $uaa_authorization_header           "Basic Y2xpZW50dmlldzpwcmVkaXg=";
+        set     $session_secret                     "PBe6PclUiQWLtXohBsh5lraoVkuNBTzLLD2/fX6mVvw=";
+        set     $client_id                          "predix-seed";
+        set     $uaa_authorization_header           "Basic cHJlZGl4LXNlZWQ6NEJadHA3Y3NaNkNrSURremRVTlFNVXpVRUZGRytJOVl0Wk80T2VJeGFCcz0=";
         set     $user_token                         '';
 
 
@@ -117,18 +117,6 @@ http
             ';
         }
 
-	location /t
-        {
-            add_header Cache-Control "private";
-            expires off;
-
-            default_type 'application/json';
-            content_by_lua '
-                local common = require("common");
-                ngx.say(common.get_token())
-            ';
-        }
-
         # Internal url to get user information
         location /_internal/_userinfo
         {
@@ -137,26 +125,26 @@ http
             proxy_pass          <%= ENV["UAA_SERVER_URL"] %>/check_token;
         }
 
-        # Any Api Call made should have bearer token set using set_access_token.lua file
+
+       # Any Api Call made should have bearer token set using set_access_token.lua file
         location /api{
             access_by_lua_file <%= ENV["APP_ROOT"] %>/set_access_token.lua;
-
-            # Refer https://github.com/PredixDev/predix-seed/wiki/Reading-VCAP_SERVICES-in-client-side-or-nginx-for-proxying for details
-            location /api/view-service
-            {
-              proxy_set_header    Authorization   $user_token;
-              proxy_set_header    predix-zone-id   "3fa09a0e-626e-4d9f-92bc-d929ac262bee";
-              rewrite             /api/view-service/(.*) /api/$1 break;
-              proxy_pass  "https://predix-views.run.aws-usw02-pr.ice.predix.io";
-            }
 
             location /api/ms
             {
               proxy_set_header    Authorization   $user_token;
-              rewrite             /api/ms/(.*) /api/$1 break;
-              proxy_pass  "http://seed-data-ms.run.aws-usw02-pr.ice.predix.io";
+              rewrite             /api/ms/(.*) /$1 break;
+              proxy_pass  "https://web-api.run.aws-usw02-pr.ice.predix.io";
+            }
+
+            location /api/blob
+            {
+              proxy_set_header    Authorization   $user_token;
+              rewrite             /api/blob/(.*) /$1 break;
+              proxy_pass  "https://blobstore-predix-seed.run.aws-usw02-pr.ice.predix.io/";
             }
         }
+
 
 
         location / {
@@ -170,10 +158,12 @@ http
 
 
             # <% if File.exists?(File.join(ENV["APP_ROOT"], "nginx/conf/.enable_directory_index")) %>
-            # 	autoindex on;
+            #   autoindex on;
             # <% end %>
         }
 
 
     }
 }
+
+
